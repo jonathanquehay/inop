@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Asistencia → Markdown (Estático, Responsive)</title>
+  <style>
+    :root{
+      --b:#e5e7eb; --t:#111827; --m:#6b7280; --bg:#f9fafb;
+      --card:#ffffff; --shadow: 0 2px 10px rgba(0,0,0,.05);
+      --radius:14px;
+    }
+    *{ box-sizing:border-box; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+    body{ margin:0; padding:16px; color:var(--t); background:var(--bg); }
+    .wrap{ max-width:1100px; margin:0 auto; display:grid; gap:14px; grid-template-columns: 1.15fr 0.85fr; }
+    @media (max-width: 980px){ .wrap{ grid-template-columns: 1fr; } }
+    .card{ background:var(--card); border:1px solid var(--b); border-radius:var(--radius); padding:14px; box-shadow: var(--shadow); }
+    h1{ font-size:18px; margin:0 0 8px; }
+    h2{ font-size:13px; margin:0 0 10px; color:var(--m); font-weight:800; }
+    .muted{ color:var(--m); font-size:12px; margin:6px 0 0; }
+    label{ display:block; font-size:12px; color:var(--m); margin-bottom:6px; }
+    input, select, textarea, button{
+      width:100%; padding:10px 12px; border:1px solid var(--b);
+      border-radius:12px; font-size:14px; outline:none; background:#fff;
+    }
+    textarea{
+      min-height:260px; resize:vertical;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    }
+    button{ cursor:pointer; font-weight:900; }
+    .btn{ padding:10px 14px; }
+    .btn-primary{ background:#111827; color:#fff; border-color:#111827; }
+    .btn-ghost{ background:#fff; }
+    .grid2{ display:grid; gap:10px; grid-template-columns: 1fr 1fr; }
+    .grid3{ display:grid; gap:10px; grid-template-columns: 1.5fr 0.6fr 1fr; }
+    .gridLoad{ display:grid; gap:10px; grid-template-columns: 1fr 1fr 1fr; }
+    @media (max-width: 520px){
+      .grid2, .grid3, .gridLoad{ grid-template-columns: 1fr; }
+    }
+    hr{ border:none; border-top:1px solid var(--b); margin:12px 0; }
+    .actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; }
+    .actions button{ width:auto; }
+    @media (max-width: 520px){
+      .actions button{ width:100%; }
+    }
+
+    /* Desktop table */
+    table{ width:100%; border-collapse:collapse; }
+    th, td{ border-bottom:1px solid var(--b); padding:10px 8px; text-align:left; font-size:14px; vertical-align:top; }
+    th{ font-size:12px; color:var(--m); font-weight:900; }
+
+    /* Mobile cards */
+    .mobileList{ display:none; }
+    @media (max-width: 720px){
+      .desktopTable{ display:none; }
+      .mobileList{ display:grid; gap:10px; }
+      .studentCard{
+        border:1px solid var(--b); border-radius:14px; padding:12px;
+        display:grid; gap:10px; background:#fff;
+      }
+      .studentTop{ display:flex; justify-content:space-between; gap:10px; align-items:center; }
+      .studentIdx{ font-weight:900; font-size:12px; color:var(--m); }
+      .miniActions{ display:flex; gap:8px; }
+      .miniActions button{ padding:8px 10px; border-radius:12px; }
+      .rowFields{ display:grid; gap:10px; grid-template-columns: 1fr 0.7fr; }
+      @media (max-width: 420px){ .rowFields{ grid-template-columns: 1fr; } }
+    }
+
+    .stats{ display:grid; grid-template-columns: repeat(2, 1fr); gap:10px; margin-top:10px; }
+    @media (max-width: 520px){ .stats{ grid-template-columns: 1fr; } }
+    .stat{ border:1px solid var(--b); border-radius:14px; padding:10px; }
+    .stat .k{ font-size:12px; color:var(--m); }
+    .stat .v{ font-size:18px; font-weight:900; margin-top:2px; }
+
+    .tag{
+      display:inline-block; padding:4px 10px; border-radius:999px;
+      border:1px solid var(--b); font-size:12px; color:var(--m);
+      margin-left:6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>Asistencia (Responsive) → genera Markdown <span class="tag">sin BD</span></h1>
+      <p class="muted">Funciona en celular. Puedes editar nombre y sexo, y marcar Presente/Ausente/Justificado.</p>
+
+      <div class="gridLoad" style="margin-top:10px;">
+        <div>
+          <label>Cargar lista (precargada)</label>
+          <select id="presetSelect">
+            <option value="2421">Grupo 2421 (lista de la foto)</option>
+            <option value="IS21">Grupo IS21 (lista de la foto)</option>
+          </select>
+        </div>
+        <div>
+          <label>&nbsp;</label>
+          <button class="btn btn-ghost" id="loadBtn">Cargar lista</button>
+        </div>
+        <div>
+          <label>&nbsp;</label>
+          <button class="btn btn-ghost" id="clearBtn">Vaciar lista</button>
+        </div>
+      </div>
+
+      <hr />
+
+      <div class="grid2">
+        <div>
+          <label>Fecha (por defecto hoy)</label>
+          <input id="date" type="date" />
+        </div>
+        <div>
+          <label>Nombre del grupo / clase (opcional)</label>
+          <input id="group" type="text" placeholder="Ej: INOP Nocturno - Grupo A" />
+        </div>
+      </div>
+
+      <hr />
+
+      <h2>Agregar estudiante</h2>
+      <div class="grid3">
+        <div>
+          <label>Nombre</label>
+          <input id="newName" type="text" placeholder="Ej: María López" />
+        </div>
+        <div>
+          <label>Sexo</label>
+          <select id="newSex">
+            <option value="F">F</option>
+            <option value="M">M</option>
+          </select>
+        </div>
+        <div style="display:flex; align-items:flex-end;">
+          <button class="btn btn-ghost" id="addBtn">Agregar</button>
+        </div>
+      </div>
+
+      <hr />
+
+      <h2>Lista de asistencia</h2>
+
+      <!-- Desktop table -->
+      <div class="desktopTable" style="overflow:auto;">
+        <table id="listTable">
+          <thead>
+            <tr>
+              <th style="width:40px;">#</th>
+              <th>Nombre (editable)</th>
+              <th style="width:120px;">Sexo (editable)</th>
+              <th style="width:190px;">Estado</th>
+              <th style="width:120px;">Acción</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <!-- Mobile list -->
+      <div class="mobileList" id="mobileList"></div>
+
+      <div class="stats" id="statsBox"></div>
+
+      <div class="actions">
+        <button class="btn btn-primary" id="genBtn">Generar Markdown</button>
+        <button class="btn btn-ghost" id="copyBtn">Copiar Markdown</button>
+        <button class="btn btn-ghost" id="resetBtn">Reiniciar estados</button>
+      </div>
+
+      <p class="muted" id="copyMsg"></p>
+    </div>
+
+    <div class="card">
+      <h2>Salida Markdown</h2>
+      <textarea id="out" spellcheck="false" placeholder="Aquí aparecerá el Markdown..."></textarea>
+      <p class="muted">Pega este Markdown donde lo necesites (Notion, GitHub, Moodle, etc.).</p>
+    </div>
+  </div>
+
+<script>
+  // ===== Listas precargadas (tus fotos) =====
+  // Grupo 2421 (Total impreso 8 + 2 anotados a mano = 10)
+  // Nota: sexo estimado por nombre (editable).
+  const PRESETS = {
+    "2421": [
+      { name: "ALEMAN DUARTE MARIA FELIX", sex: "F", status: "Presente" },
+      { name: "AMADOR SUAREZ JOSE GABRIEL", sex: "M", status: "Presente" },
+      { name: "LAZO RODRIGUEZ OSCAR ELIEZER", sex: "M", status: "Presente" },
+      { name: "PEREZ MADRIZ ISAYANA MERCEDES", sex: "F", status: "Presente" },
+      { name: "ROCHA SUAREZ KATERINE DEL ROSARIO", sex: "F", status: "Presente" },
+      { name: "SILVA YANANCY KAROLINA", sex: "F", status: "Presente" },
+      { name: "SOLIS FERNANDO ALBERTO", sex: "M", status: "Presente" },
+      { name: "SUAZO CACERES ANA JOSE", sex: "F", status: "Presente" },
+      { name: "CUNDANO GARCIA ALEXANDRA JAMILETH", sex: "F", status: "Presente" },
+      { name: "JUSMARY FRANCHESKA BONILLA URBINA", sex: "F", status: "Presente" }
+    ],
+
+    // Grupo IS21 (Total 12) con sexo anotado en la hoja (M/F)
+    "IS21": [
+      { name: "BLANDON GARCIA MARCELO MANUEL", sex: "M", status: "Presente" },
+      { name: "CARMONA HERNANDEZ HAROLD ANTONIO", sex: "M", status: "Presente" },
+      { name: "DIAZ VILLEGAS LUIS ADOLFO", sex: "M", status: "Presente" },
+      { name: "FERNANDEZ JIRON DOUGLAS RAFAEL", sex: "M", status: "Presente" },
+      { name: "OPORTA OPORTA YURAN YARETT", sex: "M", status: "Presente" },
+      { name: "ORTEGA HERNANDEZ ELEAN CRISTOBAL", sex: "M", status: "Presente" },
+      { name: "PEREZ PEREZ MAYKELING LORENA", sex: "F", status: "Presente" },
+      { name: "SOZA LUMBI MERCEDES YAMILETH", sex: "F", status: "Presente" },
+      { name: "TABLADA LOPEZ CESY ESBELIA", sex: "F", status: "Presente" },
+      { name: "VALLE CALERO HEYMAN NAHETH", sex: "M", status: "Presente" },
+      { name: "ZELAYA CORONEL HENRY ALEXANDRO", sex: "M", status: "Presente" },
+      { name: "ZELAYA CORONEL RAYMOND ALEJANDRO", sex: "M", status: "Presente" },
+      { name: "APELLIDO NERYS", sex: "M", status: "Presente" }
+    ]
+  };
+
+  // ===== Estado actual (sin BD) =====
+  let students = []; // se carga con presets o se agrega manualmente
+  const STATUS = ["Presente", "Ausente", "Justificado"];
+
+  // ===== Utilidades =====
+  function todayISO() {
+    const d = new Date();
+    const tzOffset = d.getTimezoneOffset() * 60000;
+    return new Date(d - tzOffset).toISOString().slice(0, 10);
+  }
+  function escMd(text) {
+    return String(text).replaceAll("|", "\\|").replaceAll("\n", " ").trim();
+  }
+  function countStats() {
+    let presentM = 0, presentF = 0;
+    let absent = 0, justified = 0;
+    let total = students.length;
+
+    for (const s of students) {
+      if (s.status === "Presente") {
+        if (s.sex === "M") presentM++;
+        if (s.sex === "F") presentF++;
+      }
+      if (s.status === "Ausente") absent++;
+      if (s.status === "Justificado") justified++;
+    }
+    return { total, presentM, presentF, absent, justified, presentTotal: presentM + presentF };
+  }
+
+  // ===== Render =====
+  const tbody = document.querySelector("#listTable tbody");
+  const statsBox = document.getElementById("statsBox");
+  const mobileList = document.getElementById("mobileList");
+
+  function makeSexSelect(current, onChange) {
+    const sel = document.createElement("select");
+    ["F","M"].forEach(v => {
+      const opt = document.createElement("option");
+      opt.value = v;
+      opt.textContent = v;
+      if (v === current) opt.selected = true;
+      sel.appendChild(opt);
+    });
+    sel.addEventListener("change", (e) => onChange(e.target.value));
+    return sel;
+  }
+
+  function makeStatusSelect(current, onChange) {
+    const sel = document.createElement("select");
+    STATUS.forEach(v => {
+      const opt = document.createElement("option");
+      opt.value = v;
+      opt.textContent = v;
+      if (v === current) opt.selected = true;
+      sel.appendChild(opt);
+    });
+    sel.addEventListener("change", (e) => onChange(e.target.value));
+    return sel;
+  }
+
+  function renderStats() {
+    const st = countStats();
+    statsBox.innerHTML = `
+      <div class="stat"><div class="k">Total estudiantes</div><div class="v">${st.total}</div></div>
+      <div class="stat"><div class="k">Presentes (total)</div><div class="v">${st.presentTotal}</div></div>
+      <div class="stat"><div class="k">Presentes varones</div><div class="v">${st.presentM}</div></div>
+      <div class="stat"><div class="k">Presentes mujeres</div><div class="v">${st.presentF}</div></div>
+      <div class="stat"><div class="k">Ausentes</div><div class="v">${st.absent}</div></div>
+      <div class="stat"><div class="k">Justificados</div><div class="v">${st.justified}</div></div>
+    `;
+  }
+
+  function renderDesktop() {
+    tbody.innerHTML = "";
+    students.forEach((s, idx) => {
+      const tr = document.createElement("tr");
+
+      const tdN = document.createElement("td");
+      tdN.textContent = idx + 1;
+
+      const tdName = document.createElement("td");
+      const nameInput = document.createElement("input");
+      nameInput.value = s.name;
+      nameInput.addEventListener("input", (e) => { s.name = e.target.value; });
+      tdName.appendChild(nameInput);
+
+      const tdSex = document.createElement("td");
+      tdSex.appendChild(makeSexSelect(s.sex, (val) => { s.sex = val; renderStats(); }));
+
+      const tdStatus = document.createElement("td");
+      tdStatus.appendChild(makeStatusSelect(s.status, (val) => { s.status = val; renderStats(); }));
+
+      const tdAct = document.createElement("td");
+      const del = document.createElement("button");
+      del.className = "btn btn-ghost";
+      del.textContent = "Quitar";
+      del.style.padding = "8px 10px";
+      del.addEventListener("click", () => {
+        students.splice(idx, 1);
+        render();
+      });
+      tdAct.appendChild(del);
+
+      tr.appendChild(tdN);
+      tr.appendChild(tdName);
+      tr.appendChild(tdSex);
+      tr.appendChild(tdStatus);
+      tr.appendChild(tdAct);
+
+      tbody.appendChild(tr);
+    });
+  }
+
+  function renderMobile() {
+    mobileList.innerHTML = "";
+    students.forEach((s, idx) => {
+      const card = document.createElement("div");
+      card.className = "studentCard";
+
+      const top = document.createElement("div");
+      top.className = "studentTop";
+
+      const left = document.createElement("div");
+      left.innerHTML = `<div class="studentIdx">#${idx + 1}</div>`;
+
+      const actions = document.createElement("div");
+      actions.className = "miniActions";
+      const del = document.createElement("button");
+      del.className = "btn btn-ghost";
+      del.textContent = "Quitar";
+      del.addEventListener("click", () => {
+        students.splice(idx, 1);
+        render();
+      });
+      actions.appendChild(del);
+
+      top.appendChild(left);
+      top.appendChild(actions);
+
+      const nameBlock = document.createElement("div");
+      const nameLabel = document.createElement("label");
+      nameLabel.textContent = "Nombre (editable)";
+      const nameInput = document.createElement("input");
+      nameInput.value = s.name;
+      nameInput.addEventListener("input", (e) => { s.name = e.target.value; });
+      nameBlock.appendChild(nameLabel);
+      nameBlock.appendChild(nameInput);
+
+      const rowFields = document.createElement("div");
+      rowFields.className = "rowFields";
+
+      const sexBlock = document.createElement("div");
+      const sexLabel = document.createElement("label");
+      sexLabel.textContent = "Sexo";
+      sexBlock.appendChild(sexLabel);
+      sexBlock.appendChild(makeSexSelect(s.sex, (val) => { s.sex = val; renderStats(); }));
+
+      const statusBlock = document.createElement("div");
+      const statusLabel = document.createElement("label");
+      statusLabel.textContent = "Estado";
+      statusBlock.appendChild(statusLabel);
+      statusBlock.appendChild(makeStatusSelect(s.status, (val) => { s.status = val; renderStats(); }));
+
+      rowFields.appendChild(sexBlock);
+      rowFields.appendChild(statusBlock);
+
+      card.appendChild(top);
+      card.appendChild(nameBlock);
+      card.appendChild(rowFields);
+
+      mobileList.appendChild(card);
+    });
+  }
+
+  function render() {
+    renderDesktop();
+    renderMobile();
+    renderStats();
+  }
+
+  // ===== Markdown =====
+  function generateMarkdown() {
+    const date = document.getElementById("date").value || todayISO();
+    const group = document.getElementById("group").value.trim();
+    const st = countStats();
+
+    let md = "";
+    md += group ? `# Asistencia — ${escMd(group)}\n\n` : `# Asistencia\n\n`;
+    md += `**Fecha:** ${date}\n\n`;
+
+    md += `| Fecha | Estudiante | Sexo | Estado |\n`;
+    md += `|---|---|:---:|---|\n`;
+    for (const s of students) {
+      md += `| ${date} | ${escMd(s.name)} | ${s.sex} | ${s.status} |\n`;
+    }
+
+    md += `\n## Estadísticas\n\n`;
+    md += `- Total estudiantes: **${st.total}**\n`;
+    md += `- Presentes: **${st.presentTotal}** (Varones: **${st.presentM}**, Mujeres: **${st.presentF}**)\n`;
+    md += `- Ausentes: **${st.absent}**\n`;
+    md += `- Justificados: **${st.justified}**\n`;
+    return md;
+  }
+
+  // ===== Eventos =====
+  document.getElementById("date").value = todayISO();
+
+  document.getElementById("loadBtn").addEventListener("click", () => {
+    const key = document.getElementById("presetSelect").value;
+    // Clonar para no alterar el preset
+    students = PRESETS[key].map(s => ({...s}));
+    // Sugerir nombre en campo grupo
+    document.getElementById("group").value = key === "2421" ? "INOP Nocturno — Grupo 2421" : "INOP Nocturno — Grupo IS21";
+    render();
+  });
+
+  document.getElementById("clearBtn").addEventListener("click", () => {
+    students = [];
+    render();
+  });
+
+  document.getElementById("addBtn").addEventListener("click", () => {
+    const nameEl = document.getElementById("newName");
+    const sexEl = document.getElementById("newSex");
+    const name = nameEl.value.trim();
+    const sex = sexEl.value;
+
+    if (!name) return;
+
+    const exists = students.some(s => s.name.trim().toLowerCase() === name.toLowerCase());
+    if (exists) { alert("Ese estudiante ya existe (mismo nombre)."); return; }
+
+    students.push({ name, sex, status: "Presente" });
+    nameEl.value = "";
+    render();
+  });
+
+  document.getElementById("genBtn").addEventListener("click", () => {
+    document.getElementById("out").value = generateMarkdown();
+    document.getElementById("copyMsg").textContent = "";
+  });
+
+  document.getElementById("copyBtn").addEventListener("click", async () => {
+    const out = document.getElementById("out");
+    const md = out.value || generateMarkdown();
+    out.value = md;
+    try {
+      await navigator.clipboard.writeText(md);
+      document.getElementById("copyMsg").textContent = "✅ Markdown copiado al portapapeles.";
+    } catch {
+      document.getElementById("copyMsg").textContent = "⚠️ No se pudo copiar automático. Copia manualmente.";
+    }
+  });
+
+  document.getElementById("resetBtn").addEventListener("click", () => {
+    for (const s of students) s.status = "Presente";
+    render();
+    document.getElementById("copyMsg").textContent = "";
+  });
+
+  // Cargar por defecto IS21 (puedes cambiarlo)
+  students = PRESETS["IS21"].map(s => ({...s}));
+  document.getElementById("group").value = "INOP Nocturno — Grupo IS21";
+  render();
+</script>
+</body>
+</html>
