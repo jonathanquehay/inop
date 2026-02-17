@@ -1,484 +1,967 @@
 <!doctype html>
 <html lang="es">
+
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Asistencia → Markdown (Estático, Responsive)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Asistencia → Markdown</title>
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✅</text></svg>">
+
+  <!-- Modern Font: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
   <style>
-    :root{
-      --b:#e5e7eb; --t:#111827; --m:#6b7280; --bg:#f9fafb;
-      --card:#ffffff; --shadow: 0 2px 10px rgba(0,0,0,.05);
-      --radius:14px;
-    }
-    *{ box-sizing:border-box; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
-    body{ margin:0; padding:16px; color:var(--t); background:var(--bg); }
-    .wrap{ max-width:1100px; margin:0 auto; display:grid; gap:14px; grid-template-columns: 1.15fr 0.85fr; }
-    @media (max-width: 980px){ .wrap{ grid-template-columns: 1fr; } }
-    .card{ background:var(--card); border:1px solid var(--b); border-radius:var(--radius); padding:14px; box-shadow: var(--shadow); }
-    h1{ font-size:18px; margin:0 0 8px; }
-    h2{ font-size:13px; margin:0 0 10px; color:var(--m); font-weight:800; }
-    .muted{ color:var(--m); font-size:12px; margin:6px 0 0; }
-    label{ display:block; font-size:12px; color:var(--m); margin-bottom:6px; }
-    input, select, textarea, button{
-      width:100%; padding:10px 12px; border:1px solid var(--b);
-      border-radius:12px; font-size:14px; outline:none; background:#fff;
-    }
-    textarea{
-      min-height:260px; resize:vertical;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-    }
-    button{ cursor:pointer; font-weight:900; }
-    .btn{ padding:10px 14px; }
-    .btn-primary{ background:#111827; color:#fff; border-color:#111827; }
-    .btn-ghost{ background:#fff; }
-    .grid2{ display:grid; gap:10px; grid-template-columns: 1fr 1fr; }
-    .grid3{ display:grid; gap:10px; grid-template-columns: 1.5fr 0.6fr 1fr; }
-    .gridLoad{ display:grid; gap:10px; grid-template-columns: 1fr 1fr 1fr; }
-    @media (max-width: 520px){
-      .grid2, .grid3, .gridLoad{ grid-template-columns: 1fr; }
-    }
-    hr{ border:none; border-top:1px solid var(--b); margin:12px 0; }
-    .actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; }
-    .actions button{ width:auto; }
-    @media (max-width: 520px){
-      .actions button{ width:100%; }
+    :root {
+      /* Palette: Slate & Indigo */
+      --color-bg: #f8fafc;
+      --color-surface: #ffffff;
+      --color-text-main: #0f172a;
+      --color-text-muted: #64748b;
+      --color-border: #e2e8f0;
+
+      --color-primary: #4f46e5;
+      /* Indigo 600 */
+      --color-primary-hover: #4338ca;
+      /* Indigo 700 */
+
+      --color-danger: #ef4444;
+      --color-danger-hover: #dc2626;
+
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+
+      --radius-md: 0.5rem;
+      /* 8px */
+      --radius-lg: 0.75rem;
+      /* 12px */
+      --radius-xl: 1rem;
+      /* 16px */
     }
 
-    /* Desktop table */
-    table{ width:100%; border-collapse:collapse; }
-    th, td{ border-bottom:1px solid var(--b); padding:10px 8px; text-align:left; font-size:14px; vertical-align:top; }
-    th{ font-size:12px; color:var(--m); font-weight:900; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-    /* Mobile cards */
-    .mobileList{ display:none; }
-    @media (max-width: 720px){
-      .desktopTable{ display:none; }
-      .mobileList{ display:grid; gap:10px; }
-      .studentCard{
-        border:1px solid var(--b); border-radius:14px; padding:12px;
-        display:grid; gap:10px; background:#fff;
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background-color: var(--color-bg);
+      color: var(--color-text-main);
+      padding: 1.5rem;
+      line-height: 1.5;
+    }
+
+    /* Layout Wrapper */
+    .wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    @media (max-width: 900px) {
+      .wrap {
+        grid-template-columns: 1fr;
       }
-      .studentTop{ display:flex; justify-content:space-between; gap:10px; align-items:center; }
-      .studentIdx{ font-weight:900; font-size:12px; color:var(--m); }
-      .miniActions{ display:flex; gap:8px; }
-      .miniActions button{ padding:8px 10px; border-radius:12px; }
-      .rowFields{ display:grid; gap:10px; grid-template-columns: 1fr 0.7fr; }
-      @media (max-width: 420px){ .rowFields{ grid-template-columns: 1fr; } }
     }
 
-    .stats{ display:grid; grid-template-columns: repeat(2, 1fr); gap:10px; margin-top:10px; }
-    @media (max-width: 520px){ .stats{ grid-template-columns: 1fr; } }
-    .stat{ border:1px solid var(--b); border-radius:14px; padding:10px; }
-    .stat .k{ font-size:12px; color:var(--m); }
-    .stat .v{ font-size:18px; font-weight:900; margin-top:2px; }
+    /* Cards */
+    .card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow 0.2s ease;
+    }
 
-    .tag{
-      display:inline-block; padding:4px 10px; border-radius:999px;
-      border:1px solid var(--b); font-size:12px; color:var(--m);
-      margin-left:6px;
+    .card:hover {
+      box-shadow: var(--shadow-md);
+    }
+
+    /* Typography */
+    h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--color-text-main);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: var(--color-text-main);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .muted {
+      color: var(--color-text-muted);
+      font-size: 0.875rem;
+      margin-bottom: 1rem;
+    }
+
+    /* Badge */
+    .tag {
+      background-color: #eff6ff;
+      color: var(--color-primary);
+      border: 1px solid #bfdbfe;
+      padding: 0.15rem 0.6rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.025em;
+    }
+
+    /* Form Elements */
+    label {
+      display: block;
+      font-size: 0.825rem;
+      font-weight: 500;
+      color: var(--color-text-muted);
+      margin-bottom: 0.35rem;
+    }
+
+    input,
+    select,
+    textarea,
+    button {
+      width: 100%;
+      padding: 0.625rem 0.875rem;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      font-size: 0.925rem;
+      background: #fff;
+      color: var(--color-text-main);
+      transition: all 0.2s;
+      outline: none;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+    }
+
+    textarea {
+      min-height: 280px;
+      font-family: 'JetBrains Mono', Consolas, ui-monospace, monospace;
+      font-size: 0.85rem;
+      line-height: 1.6;
+    }
+
+    /* Buttons */
+    button {
+      cursor: pointer;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .btn {
+      transition: transform 0.1s;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn-primary {
+      background: var(--color-primary);
+      color: #fff;
+      border: 1px solid transparent;
+    }
+
+    .btn-primary:hover {
+      background: var(--color-primary-hover);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--color-text-main);
+      border: 1px solid var(--color-border);
+    }
+
+    .btn-ghost:hover {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+
+    .btn-danger-ghost {
+      background: #fef2f2;
+      color: var(--color-danger);
+      border: 1px solid #fecaca;
+    }
+
+    .btn-danger-ghost:hover {
+      background: #fee2e2;
+      border-color: #fca5a5;
+    }
+
+    /* Layout Utilities */
+    .grid2 {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .grid3 {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: 2fr 1fr 1fr;
+      /* Name takes more space */
+    }
+
+    .grid-load {
+      display: grid;
+      /* More explicit setup */
+      gap: 1rem;
+      grid-template-columns: 2fr 1fr 1fr;
+      align-items: end;
+    }
+
+
+    @media (max-width: 600px) {
+
+      .grid2,
+      .grid3,
+      .grid-load {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    hr {
+      border: none;
+      border-top: 1px solid var(--color-border);
+      margin: 1.5rem 0;
+    }
+
+    /* Table Styles */
+    .desktopTable {
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    thead {
+      background: #f1f5f9;
+    }
+
+    th {
+      text-transform: uppercase;
+      font-size: 0.7rem;
+      letter-spacing: 0.05em;
+      color: var(--color-text-muted);
+      padding: 0.75rem 1rem;
+      text-align: left;
+      font-weight: 700;
+    }
+
+    td {
+      padding: 0.6rem 1rem;
+      border-top: 1px solid var(--color-border);
+      vertical-align: middle;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Mobile List Styles */
+    .mobileList {
+      display: none;
+      gap: 1rem;
+    }
+
+    .studentCard {
+      background: #fff;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .studentTop {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.25rem;
+    }
+
+    .studentIdx {
+      font-weight: 700;
+      font-size: 0.8rem;
+      color: var(--color-text-muted);
+      background: #f1f5f9;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    .rowFields {
+      display: grid;
+      gap: 0.75rem;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    @media (max-width: 768px) {
+      .desktopTable {
+        display: none;
+      }
+
+      .mobileList {
+        display: grid;
+      }
+    }
+
+    /* Stats Grid */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      /* Responsive columns */
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+    }
+
+    .stat {
+      background: #f8fafc;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: 0.75rem;
+      text-align: center;
+    }
+
+    .stat .k {
+      font-size: 0.75rem;
+      color: var(--color-text-muted);
+      font-weight: 500;
+      text-transform: uppercase;
+      margin-bottom: 0.25rem;
+    }
+
+    .stat .v {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--color-text-main);
+    }
+
+    /* Action Footer */
+    .actions {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--color-border);
+    }
+
+    .actions button {
+      width: auto;
+      padding-left: 1.25rem;
+      padding-right: 1.25rem;
+    }
+
+    @media (max-width: 600px) {
+      .actions {
+        flex-direction: column;
+      }
+
+      .actions button {
+        width: 100%;
+      }
+    }
+
+    /* Subtle utility classes */
+    .flex-center {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .text-sm {
+      font-size: 0.875rem;
+    }
+
+    .mt-4 {
+      margin-top: 1rem;
     }
   </style>
 </head>
+
 <body>
   <div class="wrap">
-    <div class="card">
-      <h1>Asistencia (Responsive) → genera Markdown <span class="tag">sin BD</span></h1>
-      <p class="muted">Funciona en celular. Puedes editar nombre y sexo, y marcar Presente/Ausente/Justificado.</p>
 
-      <div class="gridLoad" style="margin-top:10px;">
+    <!-- Left Column: Controls -->
+    <div class="card">
+      <h1>Asistencia <span class="tag">Markdown Gen</span></h1>
+      <p class="muted">Gestiona la lista de estudiantes y genera la tabla Markdown para copiar.</p>
+
+      <!-- Load Preset Section -->
+      <div class="grid-load">
         <div>
-          <label>Cargar lista (precargada)</label>
+          <label>Cargar lista precargada</label>
           <select id="presetSelect">
-            <option value="2421">Grupo 2421 (lista de la foto)</option>
-            <option value="IS21">Grupo IS21 (lista de la foto)</option>
+            <option value="2421">Grupo 2421 (10 estudiantes)</option>
+            <option value="IS21">Grupo IS21 (14 estudiantes)</option>
           </select>
         </div>
-        <div>
-          <label>&nbsp;</label>
-          <button class="btn btn-ghost" id="loadBtn">Cargar lista</button>
-        </div>
-        <div>
-          <label>&nbsp;</label>
-          <button class="btn btn-ghost" id="clearBtn">Vaciar lista</button>
-        </div>
+        <button class="btn btn-ghost" id="loadBtn">Cargar</button>
+        <button class="btn btn-danger-ghost" id="clearBtn">Vaciar</button>
       </div>
 
       <hr />
 
+      <!-- Session Info -->
       <div class="grid2">
         <div>
-          <label>Fecha (por defecto hoy)</label>
+          <label>Fecha de la clase</label>
           <input id="date" type="date" />
         </div>
         <div>
-          <label>Nombre del grupo / clase (opcional)</label>
-          <input id="group" type="text" placeholder="Ej: INOP Nocturno - Grupo A" />
+          <label>Nombre del Grupo / Título</label>
+          <input id="group" type="text" placeholder="Ej: Clase de Matemáticas" />
         </div>
       </div>
 
       <hr />
 
-      <h2>Agregar estudiante</h2>
+      <!-- Add Student -->
+      <h2><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg> Agregar estudiante</h2>
       <div class="grid3">
         <div>
-          <label>Nombre</label>
-          <input id="newName" type="text" placeholder="Ej: María López" />
+          <label>Nombre completo</label>
+          <input id="newName" type="text" placeholder="Ej: Juan Pérez" />
         </div>
         <div>
           <label>Sexo</label>
           <select id="newSex">
-            <option value="F">F</option>
-            <option value="M">M</option>
+            <option value="F">Femenino</option>
+            <option value="M">Masculino</option>
           </select>
         </div>
-        <div style="display:flex; align-items:flex-end;">
-          <button class="btn btn-ghost" id="addBtn">Agregar</button>
-        </div>
+        <button class="btn btn-primary" id="addBtn">Agregar</button>
       </div>
 
       <hr />
 
-      <h2>Lista de asistencia</h2>
+      <!-- Student List -->
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.75rem;">
+        <h2>Lista de Asistencia</h2>
+        <span class="muted" style="font-size: 0.75rem; margin-bottom: 0;" id="countLabel">0 estudiantes</span>
+      </div>
 
-      <!-- Desktop table -->
-      <div class="desktopTable" style="overflow:auto;">
+      <!-- Desktop Table -->
+      <div class="desktopTable">
         <table id="listTable">
           <thead>
             <tr>
-              <th style="width:40px;">#</th>
-              <th>Nombre (editable)</th>
-              <th style="width:120px;">Sexo (editable)</th>
-              <th style="width:190px;">Estado</th>
-              <th style="width:120px;">Acción</th>
+              <th style="width:50px;">#</th>
+              <th>Nombre</th>
+              <th style="width:140px;">Sexo</th>
+              <th style="width:160px;">Estado</th>
+              <th style="width:100px; text-align:right;">Acción</th>
             </tr>
           </thead>
-          <tbody></tbody>
+          <tbody>
+            <!-- Rows injected by JS -->
+          </tbody>
         </table>
       </div>
 
-      <!-- Mobile list -->
-      <div class="mobileList" id="mobileList"></div>
-
-      <div class="stats" id="statsBox"></div>
-
-      <div class="actions">
-        <button class="btn btn-primary" id="genBtn">Generar Markdown</button>
-        <button class="btn btn-ghost" id="copyBtn">Copiar Markdown</button>
-        <button class="btn btn-ghost" id="resetBtn">Reiniciar estados</button>
+      <!-- Mobile List (Cards) -->
+      <div class="mobileList" id="mobileList">
+        <!-- Cards injected by JS -->
       </div>
 
-      <p class="muted" id="copyMsg"></p>
+      <!-- Stats -->
+      <div class="stats" id="statsBox"></div>
+
+      <!-- Actions -->
+      <div class="actions">
+        <button class="btn btn-primary" id="genBtn">Generar Markdown</button>
+        <button class="btn btn-ghost" id="copyBtn">Copiar al Portapapeles</button>
+        <button class="btn btn-ghost" id="resetBtn">Reiniciar Estados</button>
+      </div>
+
+      <p class="muted mt-4" id="copyMsg" style="min-height: 1.5em; font-weight: 500; color: var(--color-primary);"></p>
     </div>
 
+    <!-- Right Column: Output -->
     <div class="card">
-      <h2>Salida Markdown</h2>
-      <textarea id="out" spellcheck="false" placeholder="Aquí aparecerá el Markdown..."></textarea>
-      <p class="muted">Pega este Markdown donde lo necesites (Notion, GitHub, Moodle, etc.).</p>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.5rem;">
+        <h2>Salida Markdown</h2>
+        <div style="display:flex; gap:0.5rem;">
+          <button class="btn btn-ghost" id="copyMdBtnRight" style="font-size: 0.75rem; padding: 4px 8px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg> Copiar
+          </button>
+          <button class="btn btn-primary" id="exportExcelBtn"
+            style="font-size: 0.75rem; padding: 4px 8px; background-color:#107c41; border-color:#107c41;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg> Excel
+          </button>
+        </div>
+      </div>
+      <p class="muted">El código generado aparecerá aquí.</p>
+      <textarea id="out" spellcheck="false" placeholder="La tabla en formato Markdown se mostrará aquí..."></textarea>
+      <p class="muted mt-4" id="exportMsg" style="min-height: 1.5em; font-weight: 500; color: var(--color-primary);">
+      </p>
+
+      <hr />
+
+      <h2><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#25D366" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round" style="margin-right:0.5rem; vertical-align:text-bottom;">
+          <path
+            d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z">
+          </path>
+        </svg> Resumen para WhatsApp</h2>
+      <p class="muted">Estadísticas listas para enviar.</p>
+      <textarea id="waOut" spellcheck="false" placeholder="El resumen para WhatsApp aparecerá aquí..."
+        style="min-height: 180px;"></textarea>
+      <button class="btn btn-primary" id="copyWaBtn"
+        style="margin-top:0.75rem; background-color:#25D366; border-color:#25D366;">Copiar para WhatsApp</button>
+      <p class="muted mt-4" id="copyWaMsg" style="min-height: 1.5em; font-weight: 500; color: #25D366;"></p>
     </div>
+
   </div>
 
-<script>
-  // ===== Listas precargadas (tus fotos) =====
-  // Grupo 2421 (Total impreso 8 + 2 anotados a mano = 10)
-  // Nota: sexo estimado por nombre (editable).
-  const PRESETS = {
-    "2421": [
-      { name: "ALEMAN DUARTE MARIA FELIX", sex: "F", status: "Presente" },
-      { name: "AMADOR SUAREZ JOSE GABRIEL", sex: "M", status: "Presente" },
-      { name: "LAZO RODRIGUEZ OSCAR ELIEZER", sex: "M", status: "Presente" },
-      { name: "PEREZ MADRIZ ISAYANA MERCEDES", sex: "F", status: "Presente" },
-      { name: "ROCHA SUAREZ KATERINE DEL ROSARIO", sex: "F", status: "Presente" },
-      { name: "SILVA YANANCY KAROLINA", sex: "F", status: "Presente" },
-      { name: "SOLIS FERNANDO ALBERTO", sex: "M", status: "Presente" },
-      { name: "SUAZO CACERES ANA JOSE", sex: "F", status: "Presente" },
-      { name: "CUNDANO GARCIA ALEXANDRA JAMILETH", sex: "F", status: "Presente" },
-      { name: "JUSMARY FRANCHESKA BONILLA URBINA", sex: "F", status: "Presente" }
-    ],
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+  <script>
+    // ===== Listas precargadas (Preserved Data) =====
+    const PRESETS = {
+      "2421": [
+        { name: "ALEMAN DUARTE MARIA FELIX", sex: "F", status: "Presente" },
+        { name: "AMADOR SUAREZ JOSE GABRIEL", sex: "M", status: "Presente" },
+        { name: "LAZO RODRIGUEZ OSCAR ELIEZER", sex: "M", status: "Presente" },
+        { name: "PEREZ MADRIZ ISAYANA MERCEDES", sex: "F", status: "Presente" },
+        { name: "ROCHA SUAREZ KATERINE DEL ROSARIO", sex: "F", status: "Presente" },
+        { name: "SILVA YANANCY KAROLINA", sex: "F", status: "Presente" },
+        { name: "SOLIS FERNANDO ALBERTO", sex: "M", status: "Presente" },
+        { name: "SUAZO CACERES ANA JOSE", sex: "F", status: "Presente" },
+        { name: "CUNDANO GARCIA ALEXANDRA JAMILETH", sex: "F", status: "Presente" },
+        { name: "JUSMARY FRANCHESKA BONILLA URBINA", sex: "F", status: "Presente" }
+      ],
+      "IS21": [
+        { name: "BLANDON GARCIA MARCELO MANUEL", sex: "M", status: "Presente" },
+        { name: "CARMONA HERNANDEZ HAROLD ANTONIO", sex: "M", status: "Presente" },
+        { name: "DIAZ VILLEGAS LUIS ADOLFO", sex: "M", status: "Presente" },
+        { name: "FERNANDEZ JIRON DOUGLAS RAFAEL", sex: "M", status: "Presente" },
+        { name: "OPORTA OPORTA YURAN YARETT", sex: "M", status: "Presente" },
+        { name: "ORTEGA HERNANDEZ ELEAN CRISTOBAL", sex: "M", status: "Presente" },
+        { name: "PEREZ PEREZ MAYKELING LORENA", sex: "F", status: "Presente" },
+        { name: "SOZA LUMBI MERCEDES YAMILETH", sex: "F", status: "Presente" },
+        { name: "TABLADA LOPEZ CESY ESBELIA", sex: "F", status: "Presente" },
+        { name: "VALLE CALERO HEYMAN NAHETH", sex: "M", status: "Presente" },
+        { name: "ZELAYA CORONEL HENRY ALEXANDRO", sex: "M", status: "Presente" },
+        { name: "ZELAYA CORONEL RAYMOND ALEJANDRO", sex: "M", status: "Presente" },
+        { name: "TELLEZ JIMENEZ NERYS", sex: "M", status: "Presente" },
+        { name: "ROMERO BRYAN OCTAVIO", sex: "M", status: "Presente" }
+      ]
+    };
 
-    // Grupo IS21 (Total 12) con sexo anotado en la hoja (M/F)
-    "IS21": [
-      { name: "BLANDON GARCIA MARCELO MANUEL", sex: "M", status: "Presente" },
-      { name: "CARMONA HERNANDEZ HAROLD ANTONIO", sex: "M", status: "Presente" },
-      { name: "DIAZ VILLEGAS LUIS ADOLFO", sex: "M", status: "Presente" },
-      { name: "FERNANDEZ JIRON DOUGLAS RAFAEL", sex: "M", status: "Presente" },
-      { name: "OPORTA OPORTA YURAN YARETT", sex: "M", status: "Presente" },
-      { name: "ORTEGA HERNANDEZ ELEAN CRISTOBAL", sex: "M", status: "Presente" },
-      { name: "PEREZ PEREZ MAYKELING LORENA", sex: "F", status: "Presente" },
-      { name: "SOZA LUMBI MERCEDES YAMILETH", sex: "F", status: "Presente" },
-      { name: "TABLADA LOPEZ CESY ESBELIA", sex: "F", status: "Presente" },
-      { name: "VALLE CALERO HEYMAN NAHETH", sex: "M", status: "Presente" },
-      { name: "ZELAYA CORONEL HENRY ALEXANDRO", sex: "M", status: "Presente" },
-      { name: "ZELAYA CORONEL RAYMOND ALEJANDRO", sex: "M", status: "Presente" },
-      { name: "TELLEZ JIMENEZ NERYS", sex: "M", status: "Presente" },
-      { name: "ROMERO BRYAN OCTAVIO", sex: "M", status: "Presente" }
-    ]
-  };
+    // ===== Estado =====
+    let students = [];
+    const STATUS = ["Presente", "Ausente", "Justificado"];
 
-  // ===== Estado actual (sin BD) =====
-  let students = []; // se carga con presets o se agrega manualmente
-  const STATUS = ["Presente", "Ausente", "Justificado"];
+    // ===== Utilidades =====
+    function todayISO() {
+      const d = new Date();
+      const tzOffset = d.getTimezoneOffset() * 60000;
+      return new Date(d - tzOffset).toISOString().slice(0, 10);
+    }
 
-  // ===== Utilidades =====
-  function todayISO() {
-    const d = new Date();
-    const tzOffset = d.getTimezoneOffset() * 60000;
-    return new Date(d - tzOffset).toISOString().slice(0, 10);
-  }
-  function escMd(text) {
-    return String(text).replaceAll("|", "\\|").replaceAll("\n", " ").trim();
-  }
-  function countStats() {
-    let presentM = 0, presentF = 0;
-    let absent = 0, justified = 0;
-    let total = students.length;
+    function escMd(text) {
+      return String(text).replaceAll("|", "\\|").replaceAll("\n", " ").trim();
+    }
 
-    for (const s of students) {
-      if (s.status === "Presente") {
-        if (s.sex === "M") presentM++;
-        if (s.sex === "F") presentF++;
+    function countStats() {
+      let presentM = 0, presentF = 0;
+      let absent = 0, justified = 0;
+      let total = students.length;
+
+      for (const s of students) {
+        if (s.status === "Presente") {
+          // Basic check for sex just in case
+          if (s.sex === "M") presentM++;
+          else presentF++;
+        }
+        if (s.status === "Ausente") absent++;
+        if (s.status === "Justificado") justified++;
       }
-      if (s.status === "Ausente") absent++;
-      if (s.status === "Justificado") justified++;
+      return { total, presentM, presentF, absent, justified, presentTotal: presentM + presentF };
     }
-    return { total, presentM, presentF, absent, justified, presentTotal: presentM + presentF };
-  }
 
-  // ===== Render =====
-  const tbody = document.querySelector("#listTable tbody");
-  const statsBox = document.getElementById("statsBox");
-  const mobileList = document.getElementById("mobileList");
+    // ===== Render Render =====
+    const tbody = document.querySelector("#listTable tbody");
+    const statsBox = document.getElementById("statsBox");
+    const mobileList = document.getElementById("mobileList");
+    const countLabel = document.getElementById("countLabel");
 
-  function makeSexSelect(current, onChange) {
-    const sel = document.createElement("select");
-    ["F","M"].forEach(v => {
-      const opt = document.createElement("option");
-      opt.value = v;
-      opt.textContent = v;
-      if (v === current) opt.selected = true;
-      sel.appendChild(opt);
-    });
-    sel.addEventListener("change", (e) => onChange(e.target.value));
-    return sel;
-  }
-
-  function makeStatusSelect(current, onChange) {
-    const sel = document.createElement("select");
-    STATUS.forEach(v => {
-      const opt = document.createElement("option");
-      opt.value = v;
-      opt.textContent = v;
-      if (v === current) opt.selected = true;
-      sel.appendChild(opt);
-    });
-    sel.addEventListener("change", (e) => onChange(e.target.value));
-    return sel;
-  }
-
-  function renderStats() {
-    const st = countStats();
-    statsBox.innerHTML = `
-      <div class="stat"><div class="k">Total estudiantes</div><div class="v">${st.total}</div></div>
-      <div class="stat"><div class="k">Presentes (total)</div><div class="v">${st.presentTotal}</div></div>
-      <div class="stat"><div class="k">Presentes varones</div><div class="v">${st.presentM}</div></div>
-      <div class="stat"><div class="k">Presentes mujeres</div><div class="v">${st.presentF}</div></div>
-      <div class="stat"><div class="k">Ausentes</div><div class="v">${st.absent}</div></div>
-      <div class="stat"><div class="k">Justificados</div><div class="v">${st.justified}</div></div>
-    `;
-  }
-
-  function renderDesktop() {
-    tbody.innerHTML = "";
-    students.forEach((s, idx) => {
-      const tr = document.createElement("tr");
-
-      const tdN = document.createElement("td");
-      tdN.textContent = idx + 1;
-
-      const tdName = document.createElement("td");
-      const nameInput = document.createElement("input");
-      nameInput.value = s.name;
-      nameInput.addEventListener("input", (e) => { s.name = e.target.value; });
-      tdName.appendChild(nameInput);
-
-      const tdSex = document.createElement("td");
-      tdSex.appendChild(makeSexSelect(s.sex, (val) => { s.sex = val; renderStats(); }));
-
-      const tdStatus = document.createElement("td");
-      tdStatus.appendChild(makeStatusSelect(s.status, (val) => { s.status = val; renderStats(); }));
-
-      const tdAct = document.createElement("td");
-      const del = document.createElement("button");
-      del.className = "btn btn-ghost";
-      del.textContent = "Quitar";
-      del.style.padding = "8px 10px";
-      del.addEventListener("click", () => {
-        students.splice(idx, 1);
-        render();
+    function makeSelect(options, current, onChange) {
+      const sel = document.createElement("select");
+      options.forEach(v => {
+        const opt = document.createElement("option");
+        opt.value = v;
+        opt.textContent = v;
+        if (v === current) opt.selected = true;
+        sel.appendChild(opt);
       });
-      tdAct.appendChild(del);
+      sel.addEventListener("change", (e) => onChange(e.target.value));
+      return sel;
+    }
 
-      tr.appendChild(tdN);
-      tr.appendChild(tdName);
-      tr.appendChild(tdSex);
-      tr.appendChild(tdStatus);
-      tr.appendChild(tdAct);
+    function renderStats() {
+      const st = countStats();
+      countLabel.textContent = `${st.total} estudiante${st.total !== 1 ? 's' : ''}`;
 
-      tbody.appendChild(tr);
-    });
-  }
+      statsBox.innerHTML = `
+        <div class="stat"><div class="k">Presentes</div><div class="v" style="color:var(--color-primary);">${st.presentTotal}</div></div>
+        <div class="stat"><div class="k">Ausentes</div><div class="v" style="color:var(--color-danger);">${st.absent}</div></div>
+        <div class="stat"><div class="k">Justificados</div><div class="v" style="color:var(--color-text-muted);">${st.justified}</div></div>
+        <div class="stat"><div class="k">Hombres (P)</div><div class="v">${st.presentM}</div></div>
+        <div class="stat"><div class="k">Mujeres (P)</div><div class="v">${st.presentF}</div></div>
+      `;
+    }
 
-  function renderMobile() {
-    mobileList.innerHTML = "";
-    students.forEach((s, idx) => {
-      const card = document.createElement("div");
-      card.className = "studentCard";
+    function renderDesktop() {
+      tbody.innerHTML = "";
+      students.forEach((s, idx) => {
+        const tr = document.createElement("tr");
 
-      const top = document.createElement("div");
-      top.className = "studentTop";
+        // Index
+        const tdN = document.createElement("td");
+        tdN.innerHTML = `<span class="studentIdx">${idx + 1}</span>`;
 
-      const left = document.createElement("div");
-      left.innerHTML = `<div class="studentIdx">#${idx + 1}</div>`;
+        // Name
+        const tdName = document.createElement("td");
+        const nameInput = document.createElement("input");
+        nameInput.value = s.name;
+        nameInput.placeholder = "Nombre del estudiante";
+        nameInput.addEventListener("input", (e) => { s.name = e.target.value; });
+        tdName.appendChild(nameInput);
 
-      const actions = document.createElement("div");
-      actions.className = "miniActions";
-      const del = document.createElement("button");
-      del.className = "btn btn-ghost";
-      del.textContent = "Quitar";
-      del.addEventListener("click", () => {
-        students.splice(idx, 1);
-        render();
+        // Sex
+        const tdSex = document.createElement("td");
+        tdSex.appendChild(makeSelect(["F", "M"], s.sex, (val) => { s.sex = val; renderStats(); }));
+
+        // Status
+        const tdStatus = document.createElement("td");
+        tdStatus.appendChild(makeSelect(STATUS, s.status, (val) => { s.status = val; renderStats(); }));
+
+        // Action
+        const tdAct = document.createElement("td");
+        tdAct.style.textAlign = "right";
+        const del = document.createElement("button");
+        del.className = "btn btn-danger-ghost";
+        del.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>`;
+        del.title = "Eliminar estudiante";
+        del.style.padding = "6px 8px";
+        del.addEventListener("click", () => {
+          if (confirm("¿Quitar estudiante de la lista?")) {
+            students.splice(idx, 1);
+            render();
+          }
+        });
+        tdAct.appendChild(del);
+
+        tr.appendChild(tdN);
+        tr.appendChild(tdName);
+        tr.appendChild(tdSex);
+        tr.appendChild(tdStatus);
+        tr.appendChild(tdAct);
+        tbody.appendChild(tr);
       });
-      actions.appendChild(del);
+    }
 
-      top.appendChild(left);
-      top.appendChild(actions);
+    function renderMobile() {
+      mobileList.innerHTML = "";
+      students.forEach((s, idx) => {
+        const card = document.createElement("div");
+        card.className = "studentCard";
 
-      const nameBlock = document.createElement("div");
-      const nameLabel = document.createElement("label");
-      nameLabel.textContent = "Nombre (editable)";
-      const nameInput = document.createElement("input");
-      nameInput.value = s.name;
-      nameInput.addEventListener("input", (e) => { s.name = e.target.value; });
-      nameBlock.appendChild(nameLabel);
-      nameBlock.appendChild(nameInput);
+        // Top Row: Index + Delete
+        const top = document.createElement("div");
+        top.className = "studentTop";
+        top.innerHTML = `<span class="studentIdx">#${idx + 1}</span>`;
 
-      const rowFields = document.createElement("div");
-      rowFields.className = "rowFields";
+        const delBtn = document.createElement("button");
+        delBtn.className = "btn btn-danger-ghost";
+        delBtn.innerHTML = "Quitar";
+        delBtn.style.padding = "4px 10px";
+        delBtn.style.fontSize = "0.75rem";
+        delBtn.addEventListener("click", () => {
+          if (confirm("¿Quitar estudiante?")) {
+            students.splice(idx, 1);
+            render();
+          }
+        });
+        top.appendChild(delBtn);
 
-      const sexBlock = document.createElement("div");
-      const sexLabel = document.createElement("label");
-      sexLabel.textContent = "Sexo";
-      sexBlock.appendChild(sexLabel);
-      sexBlock.appendChild(makeSexSelect(s.sex, (val) => { s.sex = val; renderStats(); }));
+        // Name
+        const nameBlock = document.createElement("div");
+        const nameLabel = document.createElement("label");
+        nameLabel.textContent = "Nombre completo";
+        const nameInput = document.createElement("input");
+        nameInput.value = s.name;
+        nameInput.addEventListener("input", (e) => { s.name = e.target.value; });
+        nameBlock.appendChild(nameLabel);
+        nameBlock.appendChild(nameInput);
 
-      const statusBlock = document.createElement("div");
-      const statusLabel = document.createElement("label");
-      statusLabel.textContent = "Estado";
-      statusBlock.appendChild(statusLabel);
-      statusBlock.appendChild(makeStatusSelect(s.status, (val) => { s.status = val; renderStats(); }));
+        // Fields Row
+        const rowFields = document.createElement("div");
+        rowFields.className = "rowFields";
 
-      rowFields.appendChild(sexBlock);
-      rowFields.appendChild(statusBlock);
+        // Sex
+        const sexBlock = document.createElement("div");
+        const sexLabel = document.createElement("label");
+        sexLabel.textContent = "Sexo";
+        sexBlock.appendChild(sexLabel);
+        sexBlock.appendChild(makeSelect(["F", "M"], s.sex, (val) => { s.sex = val; renderStats(); }));
 
-      card.appendChild(top);
-      card.appendChild(nameBlock);
-      card.appendChild(rowFields);
+        // Status
+        const statusBlock = document.createElement("div");
+        const statusLabel = document.createElement("label");
+        statusLabel.textContent = "Estado";
+        statusBlock.appendChild(statusLabel);
+        statusBlock.appendChild(makeSelect(STATUS, s.status, (val) => { s.status = val; renderStats(); }));
 
-      mobileList.appendChild(card);
+        rowFields.appendChild(sexBlock);
+        rowFields.appendChild(statusBlock);
+
+        card.appendChild(top);
+        card.appendChild(nameBlock);
+        card.appendChild(rowFields);
+        mobileList.appendChild(card);
+      });
+    }
+
+    function render() {
+      renderDesktop();
+      renderMobile();
+      renderStats();
+    }
+
+    // ===== Generators =====
+    function generateMarkdown() {
+      const date = document.getElementById("date").value || todayISO();
+      const group = document.getElementById("group").value.trim();
+      const st = countStats();
+
+      let md = "";
+      md += group ? `# Asistencia — ${escMd(group)}\n\n` : `# Asistencia\n\n`;
+      md += `**Fecha:** ${date}\n\n`;
+
+      md += `| Fecha | Estudiante | Sexo | Estado |\n`;
+      md += `|---|---|:---:|---|\n`;
+      for (const s of students) {
+        md += `| ${date} | ${escMd(s.name)} | ${s.sex} | ${s.status} |\n`;
+      }
+
+      md += `\n## Estadísticas\n\n`;
+      md += `- Total estudiantes: **${st.total}**\n`;
+      md += `- Presentes: **${st.presentTotal}** (Varones: **${st.presentM}**, Mujeres: **${st.presentF}**)\n`;
+      md += `- Ausentes: **${st.absent}**\n`;
+      md += `- Justificados: **${st.justified}**\n`;
+      return md;
+    }
+
+    function generateWhatsApp() {
+      const date = document.getElementById("date").value || todayISO();
+      const group = document.getElementById("group").value.trim() || "Clase";
+      const st = countStats();
+
+      let msg = `*Asistencia — ${group}*\n`;
+      msg += `📅 ${date}\n\n`;
+
+      msg += `📊 *Resumen de Asistencia:*\n`;
+      msg += `✅ Presentes: *${st.presentTotal}* (H: ${st.presentM}, M: ${st.presentF})\n`;
+      msg += `❌ Ausentes: *${st.absent}*\n`;
+      msg += `⚠️ Justificados: *${st.justified}*\n`;
+      msg += `--------------------------\n`;
+      msg += `👥 *Total en lista:* ${st.total}`;
+
+      return msg;
+    }
+
+    // ===== Event Listeners =====
+    document.getElementById("date").value = todayISO();
+
+    document.getElementById("loadBtn").addEventListener("click", () => {
+      const key = document.getElementById("presetSelect").value;
+      if (students.length > 0 && !confirm("¿Reemplazar lista actual con la precargada?")) return;
+
+      students = PRESETS[key].map(s => ({ ...s }));
+      document.getElementById("group").value = key === "2421" ? "INOP Nocturno — Grupo 2421" : "INOP Nocturno — Grupo IS21";
+      render();
     });
-  }
 
-  function render() {
-    renderDesktop();
-    renderMobile();
-    renderStats();
-  }
+    document.getElementById("clearBtn").addEventListener("click", () => {
+      if (confirm("¿Seguro que quieres borrar toda la lista?")) {
+        students = [];
+        render();
+      }
+    });
 
-  // ===== Markdown =====
-  function generateMarkdown() {
-    const date = document.getElementById("date").value || todayISO();
-    const group = document.getElementById("group").value.trim();
-    const st = countStats();
+    document.getElementById("addBtn").addEventListener("click", () => {
+      const nameEl = document.getElementById("newName");
+      const sexEl = document.getElementById("newSex");
+      const name = nameEl.value.trim();
+      const sex = sexEl.value;
 
-    let md = "";
-    md += group ? `# Asistencia — ${escMd(group)}\n\n` : `# Asistencia\n\n`;
-    md += `**Fecha:** ${date}\n\n`;
+      if (!name) return;
 
-    md += `| Fecha | Estudiante | Sexo | Estado |\n`;
-    md += `|---|---|:---:|---|\n`;
-    for (const s of students) {
-      md += `| ${date} | ${escMd(s.name)} | ${s.sex} | ${s.status} |\n`;
-    }
+      // Check duplicate
+      const exists = students.some(s => s.name.trim().toLowerCase() === name.toLowerCase());
+      if (exists) {
+        alert("¡Ese estudiante ya está en la lista!");
+        return;
+      }
 
-    md += `\n## Estadísticas\n\n`;
-    md += `- Total estudiantes: **${st.total}**\n`;
-    md += `- Presentes: **${st.presentTotal}** (Varones: **${st.presentM}**, Mujeres: **${st.presentF}**)\n`;
-    md += `- Ausentes: **${st.absent}**\n`;
-    md += `- Justificados: **${st.justified}**\n`;
-    return md;
-  }
+      students.push({ name, sex, status: "Presente" });
+      nameEl.value = "";
+      render();
+    });
 
-  // ===== Eventos =====
-  document.getElementById("date").value = todayISO();
+    document.getElementById("genBtn").addEventListener("click", () => {
+      // Generate both
+      document.getElementById("out").value = generateMarkdown();
+      document.getElementById("waOut").value = generateWhatsApp();
 
-  document.getElementById("loadBtn").addEventListener("click", () => {
-    const key = document.getElementById("presetSelect").value;
-    // Clonar para no alterar el preset
-    students = PRESETS[key].map(s => ({...s}));
-    // Sugerir nombre en campo grupo
-    document.getElementById("group").value = key === "2421" ? "INOP Nocturno — Grupo 2421" : "INOP Nocturno — Grupo IS21";
+      document.getElementById("copyMsg").textContent = "";
+      document.getElementById("copyWaMsg").textContent = "";
+      document.getElementById("exportMsg").textContent = "";
+
+      // Scroll to outputs
+      document.getElementById("out").scrollIntoView({ behavior: 'smooth' });
+    });
+
+    // Copy Markdown Main
+    document.getElementById("copyBtn").addEventListener("click", async () => {
+      const out = document.getElementById("out");
+      const content = out.value || generateMarkdown();
+      out.value = content;
+      try {
+        await navigator.clipboard.writeText(content);
+        document.getElementById("copyMsg").textContent = "✅ Copiado al portapapeles";
+        setTimeout(() => document.getElementById("copyMsg").textContent = "", 3000);
+      } catch {
+        document.getElementById("copyMsg").textContent = "⚠️ Error al copiar.";
+      }
+    });
+
+    // Copy Markdown Right
+    document.getElementById("copyMdBtnRight").addEventListener("click", async () => {
+      const out = document.getElementById("out");
+      const content = out.value || generateMarkdown();
+      out.value = content;
+      try {
+        await navigator.clipboard.writeText(content);
+        document.getElementById("exportMsg").textContent = "✅ Markdown copiado!";
+        setTimeout(() => document.getElementById("exportMsg").textContent = "", 3000);
+      } catch {
+        document.getElementById("exportMsg").textContent = "⚠️ Error al copiar.";
+      }
+    });
+
+    // Export Excel (.xlsx) using SheetJS
+    document.getElementById("exportExcelBtn").addEventListener("click", () => {
+      const date = document.getElementById("date").value || todayISO();
+      const group = (document.getElementById("group").value || "Asistencia").trim();
+
+      // Prepare data
+      const data = students.map(s => ({
+        "Fecha": date,
+        "Estudiante": s.name,
+        "Sexo": s.sex,
+        "Estado": s.status
+      }));
+
+      // Create worksheet
+      const ws = XLSX.utils.json_to_sheet(data);
+
+      // Set column widths
+      const wscols = [
+        { wch: 12 }, // Date
+        { wch: 35 }, // Name
+        { wch: 6 },  // Sex
+        { wch: 12 }  // Status
+      ];
+      ws['!cols'] = wscols;
+
+      // Create workbook
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Asistencia");
+
+      // Write file
+      const filename = `Asistencia_${group.replace(/\s+/g, "_")}_${date}.xlsx`;
+      XLSX.writeFile(wb, filename);
+    });
+
+    // Copy WhatsApp
+    document.getElementById("copyWaBtn").addEventListener("click", async () => {
+      const waOut = document.getElementById("waOut");
+      const content = waOut.value || generateWhatsApp();
+      waOut.value = content;
+      try {
+        await navigator.clipboard.writeText(content);
+        document.getElementById("copyWaMsg").textContent = "✅ Resumen de WhatsApp copiado!";
+        setTimeout(() => document.getElementById("copyWaMsg").textContent = "", 3000);
+      } catch {
+        document.getElementById("copyWaMsg").textContent = "⚠️ Error al copiar.";
+      }
+    });
+
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      if (confirm("¿Marcar a TODOS como Presente?")) {
+        for (const s of students) s.status = "Presente";
+        render();
+        document.getElementById("copyMsg").textContent = "";
+        document.getElementById("copyWaMsg").textContent = "";
+        document.getElementById("exportMsg").textContent = "";
+      }
+    });
+
+    // Init with default data
+    students = PRESETS["IS21"].map(s => ({ ...s }));
+    document.getElementById("group").value = "INOP Nocturno — Grupo IS21";
     render();
-  });
-
-  document.getElementById("clearBtn").addEventListener("click", () => {
-    students = [];
-    render();
-  });
-
-  document.getElementById("addBtn").addEventListener("click", () => {
-    const nameEl = document.getElementById("newName");
-    const sexEl = document.getElementById("newSex");
-    const name = nameEl.value.trim();
-    const sex = sexEl.value;
-
-    if (!name) return;
-
-    const exists = students.some(s => s.name.trim().toLowerCase() === name.toLowerCase());
-    if (exists) { alert("Ese estudiante ya existe (mismo nombre)."); return; }
-
-    students.push({ name, sex, status: "Presente" });
-    nameEl.value = "";
-    render();
-  });
-
-  document.getElementById("genBtn").addEventListener("click", () => {
-    document.getElementById("out").value = generateMarkdown();
-    document.getElementById("copyMsg").textContent = "";
-  });
-
-  document.getElementById("copyBtn").addEventListener("click", async () => {
-    const out = document.getElementById("out");
-    const md = out.value || generateMarkdown();
-    out.value = md;
-    try {
-      await navigator.clipboard.writeText(md);
-      document.getElementById("copyMsg").textContent = "✅ Markdown copiado al portapapeles.";
-    } catch {
-      document.getElementById("copyMsg").textContent = "⚠️ No se pudo copiar automático. Copia manualmente.";
-    }
-  });
-
-  document.getElementById("resetBtn").addEventListener("click", () => {
-    for (const s of students) s.status = "Presente";
-    render();
-    document.getElementById("copyMsg").textContent = "";
-  });
-
-  // Cargar por defecto IS21 (puedes cambiarlo)
-  students = PRESETS["IS21"].map(s => ({...s}));
-  document.getElementById("group").value = "INOP Nocturno — Grupo IS21";
-  render();
-</script>
+  </script>
 </body>
-</html>
 
+</html>
