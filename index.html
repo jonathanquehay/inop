@@ -157,11 +157,17 @@
       box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
     }
 
-    textarea {
-      min-height: 280px;
+    /* Specific textarea styling for output */
+    #out,
+    #waOut {
+      min-height: 260px;
       font-family: 'JetBrains Mono', Consolas, ui-monospace, monospace;
       font-size: 0.85rem;
       line-height: 1.6;
+    }
+
+    textarea {
+      resize: vertical;
     }
 
     /* Buttons */
@@ -737,9 +743,15 @@
         const nameBlock = document.createElement("div");
         const nameLabel = document.createElement("label");
         nameLabel.textContent = "Nombre completo";
-        const nameInput = document.createElement("input");
+
+        // Use textarea for better visibility on mobile
+        const nameInput = document.createElement("textarea");
         nameInput.value = s.name;
+        nameInput.rows = 2; // Default height
+        nameInput.style.minHeight = "60px"; // Ensure enough space
+        nameInput.style.fontFamily = "inherit"; // Use main font, not mono
         nameInput.addEventListener("input", (e) => { s.name = e.target.value; });
+
         nameBlock.appendChild(nameLabel);
         nameBlock.appendChild(nameInput);
 
